@@ -30,7 +30,6 @@
 import sys
 import csv
 import re
-#import random
 import os
 from os.path import exists
 import configparser
