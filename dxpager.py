@@ -295,17 +295,19 @@ class DXPager():
                         hash_entry = hashlib.md5(cf.encode())
                         # If the DX station's entity hasn't been worked/confirmed via
                         # LotW yet, the message will be sent to the dapnet API
-                        if hash_entry.hexdigest() not in self.cache.keys() and \
-                                self.check_lotw_confirmed and self.config['lotw']['user'] != "N0CALL" \
-                                and cty_details[2] not in self.confirmed_entities:
-                            response = requests.post(self.config['dapnet']['dapnet_url'], \
-                                data=dapnet_json, auth=HTTPBasicAuth(\
-                                self.config['dapnet']['dapnet_user'],\
-                                self.config['dapnet']['dapnet_pass']))
-                            self.cache[hash_entry.hexdigest()] = cf
-                            print("!!! Sent to DAPNET: {} Response: {}".format(msg, response))
+                        if hash_entry.hexdigest() not in self.cache.keys():
+                            if self.check_lotw_confirmed and self.config['lotw']['user'] != "N0CALL" \
+                                    and cty_details[2] not in self.confirmed_entities:
+                                response = requests.post(self.config['dapnet']['dapnet_url'], \
+                                    data=dapnet_json, auth=HTTPBasicAuth(\
+                                    self.config['dapnet']['dapnet_user'],\
+                                    self.config['dapnet']['dapnet_pass']))
+                                self.cache[hash_entry.hexdigest()] = cf
+                                print("!!! Sent to DAPNET: {} Response: {}".format(msg, response))
+                            else:
+                                print("    Entity already confirmed: {}".format(msg))
                         else:
-                            print("    Not sent to DAPNET: {}".format(msg))
+                            print("    Duplicate: {}".format(msg))
 
                     except AttributeError:
                         print(line)
