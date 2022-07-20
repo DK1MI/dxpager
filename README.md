@@ -25,29 +25,15 @@ DXPager needs Python 3 and the following libraries:
 
 Furthermore, you need an account at LotW and hampager.de
 
-Before installing DXPager, please make sure that pip, setuptools and wheel are installed and up-to-date:
+In order to install dxpager, just clone the repo:
 
 ```
-# python3 -m pip install --upgrade pip setuptools wheel
-```
-
-Finally, install ColorSpot with pip:
-
-```
-# python3 -m pip install dxpager
-```
-
-# Updating
-
-To update dxpager, execute the following command:
-
-```
-# python3 -m pip install --upgrade dxpager
+# git clone https://codeberg.org/mclemens/dxpager.git
 ```
 
 # Usage
 
- * execute the application with "dxpager"
+ * execute the application with "python3 dxpager"
  * DXPager creates a default config file and states its location (e.g. _~/.config/dxpager/dxpager.ini_)
  * adapt _~/.config/dxpager/dxpager.ini_ to your needs. Important setting are:
     * cluster/host and cluster/port: Change this if you want to use another cluster server
