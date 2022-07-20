@@ -8,6 +8,7 @@ worked/confirmed before. To achieve this, it
   * determines the DX station's continent
   * determines if the DX station uses LotW
   * determines if the DX station's country has been confirmed via LotW
+  * de-duplicates spots
   * and finally - if it's a new DXCC - sends the information to your dapnet pager
 
 # Limitations
@@ -21,6 +22,7 @@ The following limitations are present:
 
 DXPager needs Python 3 and the following libraries:
 
+ * cachetools
  * requests
 
 Furthermore, you need an account at LotW and hampager.de

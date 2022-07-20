@@ -38,7 +38,9 @@ from telnetlib import Telnet
 from pathlib import Path
 import json
 import requests
+import hashlib
 from requests.auth import HTTPBasicAuth
+from cachetools import TTLCache
 
 
 class DXPager():
@@ -49,6 +51,8 @@ class DXPager():
 
         self.print_banner()
 
+        
+        self.cache = TTLCache(maxsize=100, ttl=3600)
         self.config = configparser.ConfigParser()
         self.home_dir = str(Path.home())
         self.config_dir = self.home_dir + "/.config/dxpager/"
@@ -253,7 +257,6 @@ class DXPager():
                     try:
                         # Extract all necessary fields from the line and store them
                         # into different variables.
-                        #print(line)
                         call_de = re.search('D(X|x) de (.+?): ', line).group(2)
                         freq = re.search(': +(.+?)  ', line).group(1)
                         call_dx = re.search(freq + ' +(.+?) ', line).group(1)
@@ -282,20 +285,24 @@ class DXPager():
                         # Removes the trailing .0 from a frequency for better readability
                         freq = freq.replace('.0', '')
 
-                        msg = "{}: {} de {} {} {}({}){}{}"\
+                        msg = "{}: {} de {} {} {} ({}){}{}"\
                             .format(time, call_dx, call_de, freq, areaname, continent, lotw, comment)
                         dapnet_json = json.dumps({"text": msg, "callSignNames": \
                             [self.config['dapnet']['dapnet_callsigns']], \
                             "transmitterGroupNames": [self.config['dapnet']['dapnet_txgroup']], \
                             "emergency": False})
+                        cf = call_dx+freq
+                        hash_entry = hashlib.md5(cf.encode())
                         # If the DX station's entity hasn't been worked/confirmed via
                         # LotW yet, the message will be sent to the dapnet API
-                        if self.check_lotw_confirmed and self.config['lotw']['user'] != "N0CALL" \
+                        if hash_entry.hexdigest() not in self.cache.keys() and \
+                                self.check_lotw_confirmed and self.config['lotw']['user'] != "N0CALL" \
                                 and cty_details[2] not in self.confirmed_entities:
                             response = requests.post(self.config['dapnet']['dapnet_url'], \
                                 data=dapnet_json, auth=HTTPBasicAuth(\
                                 self.config['dapnet']['dapnet_user'],\
                                 self.config['dapnet']['dapnet_pass']))
+                            self.cache[hash_entry.hexdigest()] = cf
                             print("!!! Sent to DAPNET: {} Response: {}".format(msg, response))
                         else:
                             print("    Not sent to DAPNET: {}".format(msg))
