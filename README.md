@@ -51,6 +51,3 @@ In order to install dxpager, just clone the repo:
     * https://lotw.arrl.org/lotw-user-activity.csv
     * https://lotw.arrl.org/lotwuser/lotwreport.adi?login={}&password={}&qso_query=1&qso_qsl=yes&qso_mode={}&qso_qsldetail=yes&qso_qslsince=1970-01-01
 
-# License
-
-see ![LICENSE](LICENSE)
