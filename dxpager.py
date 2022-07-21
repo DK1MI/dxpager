@@ -50,7 +50,8 @@ class DXPager():
         """initialize things"""
 
         self.print_banner()
-
+        
+        self.vip_calls = []
         
         self.cache = TTLCache(maxsize=100, ttl=3600)
         self.config = configparser.ConfigParser()
@@ -74,6 +75,9 @@ class DXPager():
             with open(self.config_dir + self.config['files']['lotw_activity'], encoding='us-ascii') as csvfile:
                 self.lotw_activity = list(csv.reader(csvfile, delimiter=','))
 
+        if self.config['filter'] and self.config['filter']['vip_calls']:
+            self.vip_calls = self.config['filter']['vip_calls'].split(',')
+            print(self.vip_calls)
 
     @staticmethod
     def print_banner():
@@ -100,6 +104,8 @@ class DXPager():
                 'port': '7373',
                 'user': 'N0CALL',
                 'timeout': '100'}
+            config['filter'] = {
+                'vip_calls': 'DK1MI,N0CALL'}
             config['dapnet'] = {
                 'dapnet_user': 'N0CALL',
                 'dapnet_pass': 'xxxxxxxxxxxxxxxxxxxx',
@@ -293,11 +299,21 @@ class DXPager():
                             "emergency": False})
                         cf = call_dx+freq
                         hash_entry = hashlib.md5(cf.encode())
+
+                        # check if the DX call is in your VIP call list.
+                        # Call sign addition like /P will be ignored
+                        is_vip_call = False
+                        my_regex = r"(^.*\/)?" + re.escape(call_dx) + r"(\/.*?)?$"
+                        for vip in self.vip_calls:
+                            if re.search(my_regex, vip, re.IGNORECASE):
+                                is_vip_call = True
+
                         # If the DX station's entity hasn't been worked/confirmed via
                         # LotW yet, the message will be sent to the dapnet API
                         if hash_entry.hexdigest() not in self.cache.keys():
-                            if self.check_lotw_confirmed and self.config['lotw']['user'] != "N0CALL" \
-                                    and cty_details[2] not in self.confirmed_entities:
+                            if (self.check_lotw_confirmed and self.config['lotw']['user'] != "N0CALL" \
+                                    and cty_details[2] not in self.confirmed_entities) or \
+                                    is_vip_call:
                                 response = requests.post(self.config['dapnet']['dapnet_url'], \
                                     data=dapnet_json, auth=HTTPBasicAuth(\
                                     self.config['dapnet']['dapnet_user'],\

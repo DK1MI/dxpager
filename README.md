@@ -8,8 +8,9 @@ worked/confirmed before. To achieve this, it
   * determines the DX station's continent
   * determines if the DX station uses LotW
   * determines if the DX station's country has been confirmed via LotW
+  * checks if the DX call is in your VIP call list
   * de-duplicates spots
-  * and finally - if it's a new DXCC - sends the information to your dapnet pager
+  * and finally - if it's a new DXCC or a watchlist triggered - sends the information to your dapnet pager
 
 # Limitations
 
