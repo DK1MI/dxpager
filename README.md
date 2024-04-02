@@ -31,7 +31,7 @@ Furthermore, you need an account at LotW and hampager.de
 In order to install dxpager, just clone the repo:
 
 ```
-# git clone https://codeberg.org/mclemens/dxpager.git
+# git clone https://git.dk1mi.radio/mclemens/dxpager.git
 ```
 
 # Usage
